@@ -1,14 +1,10 @@
 /**
- * AIR FLY - 拍照识别功能增强版
+ * AIR FLY - 混元Vision版
  * 
- * 拍照识别流程：
- * 1. 用户拍照或选图
- * 2. 调用云函数 OCR 识别图片中的文字
- * 3. 自动匹配航空行李规则库
- * 4. 跳转到结果页
+ * 拍照识别：使用腾讯混元t1-vision模型识别图中的物品
+ * 文字搜索：本地规则库模糊匹配
  */
 
-// 更新 index.js 中的 onCamera 方法
 Page({
   data: {
     query: '',
@@ -16,19 +12,23 @@ Page({
     hotQueries: ['充电宝', '化妆品', '茅台酒', '自热火锅', '老干妈', '打火机', '宠物', '榴莲', '无人机', '瑞士军刀'],
     history: [],
     showClear: false,
-    hasCloudEnv: false  // 标记是否已初始化云环境
+    visionReady: false
   },
 
   onLoad() {
     const history = wx.getStorageSync('search_history') || []
-    this.setData({ history })
+    const app = getApp()
+    this.setData({
+      history,
+      visionReady: app.globalData.cloudReady
+    })
+  },
 
-    // 尝试初始化云开发（如果已开通）
-    try {
-      wx.cloud.init({ env: 'airfly-xxx' })
-      this.setData({ hasCloudEnv: true })
-    } catch(e) {
-      this.setData({ hasCloudEnv: false })
+  onShow() {
+    // 每次显示重新检测云环境状态
+    const app = getApp()
+    if (this.data.visionReady !== app.globalData.cloudReady) {
+      this.setData({ visionReady: app.globalData.cloudReady })
     }
   },
 
@@ -129,10 +129,7 @@ Page({
 
   /**
    * 拍照识别 - 主入口
-   * 
-   * 使用两种方式：
-   * 方式A（推荐）：用户拍照 → wx.chooseMedia → 上传云存储 → 云函数OCR → 自动匹配 → 跳转结果
-   * 方式B（兜底）：无云开发 → 用户拍照 → 手动输入物品名称
+   * 使用腾讯混元t1-vision识别图中物品
    */
   onCamera() {
     const self = this
@@ -148,19 +145,11 @@ Page({
           sourceType: sourceType,
           success(mediaRes) {
             const tempPath = mediaRes.tempFiles[0].tempFilePath
-            wx.showLoading({ title: '识别中...', mask: true })
-
-            // 如果有云开发环境，调用云函数
-            if (self.data.hasCloudEnv) {
-              self.recognizeWithCloud(tempPath)
-            } else {
-              // 无云环境：用户手动输入
-              wx.hideLoading()
-              self.ocrFallback()
-            }
+            wx.showLoading({ title: 'AI识别中...', mask: true })
+            self.recognizeWithVision(tempPath)
           },
           fail() {
-            // 用户取消拍照
+            // 用户取消
           }
         })
       }
@@ -168,75 +157,91 @@ Page({
   },
 
   /**
-   * 云函数OCR识别
+   * 使用混元Vision识别图片中的物品
+   * 
+   * 调用链路：
+   *   前端 → wx.cloud.extend.AI.createModel("cloudbase") → 混元t1-vision
+   *   全程走微信云链路，无需配置域名白名单
    */
-  recognizeWithCloud(tempPath) {
+  async recognizeWithVision(tempPath) {
     const self = this
-    // 1. 上传图片到云存储
-    wx.cloud.uploadFile({
-      cloudPath: `ocr/${Date.now()}.jpg`,
-      filePath: tempPath,
-      success(uploadRes) {
-        // 2. 调用云函数识别
-        wx.cloud.callFunction({
-          name: 'recognize',
-          data: { fileID: uploadRes.fileID },
-          success(callRes) {
-            wx.hideLoading()
-            const result = callRes.result
-            
-            if (result.code === 0 && result.recognized) {
-              // 自动匹配到了规则
-              wx.navigateTo({
-                url: `/pages/result/result?q=${encodeURIComponent(result.recognized)}`
-              })
-            } else if (result.code === 0) {
-              // 有识别结果但没匹配到规则
-              wx.showModal({
-                title: '识别结果',
-                content: `识别到：${result.recognized}，未匹配到航空规则`,
-                confirmText: '手动搜索',
-                success(modalRes) {
-                  if (modalRes.confirm) {
-                    self.setData({ query: result.recognized })
-                  }
-                }
-              })
-            } else {
-              // 识别失败
-              self.ocrFallback()
-            }
-          },
-          fail() {
-            wx.hideLoading()
-            self.ocrFallback()
+
+    // 检查云环境和基础库版本
+    if (!wx.cloud || !wx.cloud.extend || !wx.cloud.extend.AI) {
+      wx.hideLoading()
+      wx.showModal({
+        title: 'AI识别暂不可用',
+        content: '请更新微信版本后再试，或手动输入物品名称搜索',
+        confirmText: '去搜索',
+        success: (res) => {
+          if (res.confirm) {
+            // 聚焦输入框
           }
+        }
+      })
+      return
+    }
+
+    try {
+      // 1. 图片转base64
+      const fs = wx.getFileSystemManager()
+      const base64 = fs.readFileSync(tempPath, 'base64')
+      const imageUrl = `data:image/jpeg;base64,${base64}`
+
+      // 2. 调用混元t1-vision识别物品
+      const model = wx.cloud.extend.AI.createModel("cloudbase")
+      const res = await model.generateText({
+        model: "hunyuan-t1-vision",
+        messages: [{
+          role: "user",
+          content: [
+            { type: "text", text: "识别图中的物品是什么？用3-5个中文汉字说出物品名称。只说名称，不要说其他任何话。如果图中没有物品，回复'无'。" },
+            { type: "image_url", image_url: { url: imageUrl } }
+          ]
+        }]
+      })
+
+      wx.hideLoading()
+
+      const itemName = (res.choices?.[0]?.message?.content || '').trim()
+      
+      if (itemName && itemName !== '无' && itemName.length <= 10) {
+        // 识别成功，匹配规则库
+        this.addHistory(itemName)
+        wx.navigateTo({
+          url: `/pages/result/result?q=${encodeURIComponent(itemName)}`
         })
-      },
-      fail() {
-        wx.hideLoading()
-        self.ocrFallback()
+      } else {
+        // 识别到但无法确定
+        this.recognitionFallback()
       }
-    })
+    } catch (err) {
+      wx.hideLoading()
+      console.error('[AIR FLY] Vision识别失败:', err)
+      
+      // 如果是并发超限，提示用户
+      if (err.errCode === 'EXCEED_CONCURRENT_REQUEST_LIMIT') {
+        wx.showToast({ title: '当前使用人数多，请稍后重试', icon: 'none' })
+        return
+      }
+      
+      this.recognitionFallback()
+    }
   },
 
   /**
-   * OCR兜底：返回首页手动输入
-   * wx.showModal 不支持 editable，改用导航回首页
+   * 识别失败兜底
    */
-  ocrFallback() {
+  recognitionFallback() {
     wx.showModal({
-      title: '拍照识别',
-      content: '云环境尚未配置，请在搜索框输入物品名称',
-      confirmText: '知道了',
-      success() {
-        // 用户已经在首页，直接聚焦输入框
-      }
+      title: '识别失败',
+      content: 'AI暂未识别出图中的物品，请在搜索框输入名称',
+      confirmText: '知道了'
     })
   },
 
   /**
-   * 长按麦克风语音输入（预留）
+   * 语音输入（预留）
    */
   onVoiceInput() {
     wx.showToast({ title: '语音输入开发中', icon: 'none' })
