@@ -1,0 +1,81 @@
+<view class="page-checklist">
+  <!-- 创建新旅行 -->
+  <view class="create-card" wx:if="{{trips.length === 0 && !showNewTrip}}">
+    <text class="create-icon">✈️</text>
+    <text class="create-title">创建你的旅行清单</text>
+    <text class="create-desc">每次出行前，用清单检查每件物品能不能带上飞机</text>
+    <button class="btn-primary" bindtap="onNewTrip">+ 创建新旅行</button>
+  </view>
+
+  <!-- 新旅行表单 -->
+  <view class="form-card" wx:if="{{showNewTrip}}">
+    <text class="form-title">新建旅行</text>
+    <input class="form-input" placeholder="旅行名称（如：三亚度假）" 
+      value="{{newTripName}}" bindinput="onTripNameInput" />
+    <input class="form-input" placeholder="出发日期" type="date"
+      value="{{newTripDate}}" bindinput="onTripDateInput" />
+    <view class="form-btns">
+      <button class="btn-cancel" bindtap="onCancelNew">取消</button>
+      <button class="btn-primary" bindtap="onSaveTrip">保存</button>
+    </view>
+  </view>
+
+  <!-- 旅行选择器 -->
+  <view class="trip-selector" wx:if="{{trips.length > 0}}">
+    <scroll-view class="trip-tabs" scroll-x>
+      <view class="trip-tab {{currentIndex === idx ? 'active' : ''}}"
+        wx:for="{{trips}}" wx:key="id"
+        data-index="{{idx}}" bindtap="onSelectTrip">
+        <text class="trip-tab-name">{{item.name}}</text>
+        <text class="trip-tab-info">{{item.date}} · {{item.items.length}}件</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 清单内容 -->
+  <view class="list-section" wx:if="{{currentTrip}}">
+    <view class="list-header">
+      <text class="list-title">{{currentTrip.name}}</text>
+      <view class="list-actions">
+        <text class="header-btn" bindtap="onAddItem">+添加</text>
+        <text class="header-btn" wx:if="{{currentTrip.items.length > 0}}" 
+          bindtap="onClearChecked">清理已选</text>
+      </view>
+    </view>
+
+    <!-- 全检查按钮 -->
+    <view class="scan-bar">
+      <button class="btn-scan" bindtap="onScanAll">🔍 一键检查所有物品</button>
+      <button class="btn-export" bindtap="onExport">📋 导出清单</button>
+    </view>
+
+    <!-- 物品列表 -->
+    <view class="items-list" wx:if="{{currentTrip.items.length > 0}}">
+      <view class="item-card {{item.checked ? 'checked' : ''}}"
+        wx:for="{{currentTrip.items}}" wx:key="id"
+        data-index="{{index}}" bindtap="onToggleCheck">
+        <view class="item-check">{{item.checked ? '✅' : '⬜'}}</view>
+        <view class="item-info">
+          <text class="item-name">{{item.name}}</text>
+          <text class="item-result" wx:if="{{item.checkResult}}">{{item.checkResult}}</text>
+        </view>
+        <text class="item-delete" catchtap="onDeleteItem" data-index="{{index}}">🗑️</text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-list" wx:else>
+      <text class="empty-icon">📦</text>
+      <text class="empty-text">清单还是空的</text>
+      <text class="empty-hint">在搜索结果中点击「加入清单」，或在这里手动添加</text>
+      <button class="btn-primary" bindtap="onAddItem">+ 添加物品</button>
+    </view>
+  </view>
+
+  <!-- 旅行管理 -->
+  <view class="manage-bar" wx:if="{{trips.length > 0}}">
+    <button class="btn-new-trip" bindtap="onNewTrip">+ 新建旅行</button>
+    <button class="btn-delete-trip" catchtap="onDeleteTrip" 
+      data-id="{{currentTrip.id}}" wx:if="{{trips.length > 1}}">🗑️ 删除此清单</button>
+  </view>
+</view>

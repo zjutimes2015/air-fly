@@ -1,0 +1,8 @@
+node_modules/
+miniprogram_npm/
+cloudfunctions/*/node_modules/
+*.log
+.DS_Store
+.project
+.project.user
+*.suo

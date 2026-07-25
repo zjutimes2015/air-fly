@@ -1,0 +1,34 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/result/result",
+    "pages/checklist/checklist"
+  ],
+  "window": {
+    "navigationBarTitleText": "AIR FLY",
+    "navigationBarBackgroundColor": "#1A1A2E",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F5FA"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#1A1A2E",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "查询",
+        "iconPath": "images/search.png",
+        "selectedIconPath": "images/search_active.png"
+      },
+      {
+        "pagePath": "pages/checklist/checklist",
+        "text": "清单",
+        "iconPath": "images/list.png",
+        "selectedIconPath": "images/list_active.png"
+      }
+    ]
+  },
+  "usingComponents": {},
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

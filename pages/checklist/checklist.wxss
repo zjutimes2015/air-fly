@@ -1,0 +1,239 @@
+.page-checklist {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* 空状态创建卡片 */
+.create-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 60rpx;
+}
+.create-icon { font-size: 80rpx; margin-bottom: 20rpx; }
+.create-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+.create-desc {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
+  margin: 16rpx 0 40rpx;
+  line-height: 1.6;
+}
+
+/* 表单 */
+.form-card {
+  background: #fff;
+  margin: 30rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+.form-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 24rpx;
+}
+.form-input {
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+  width: 100%;
+}
+.form-btns {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 12rpx;
+}
+.btn-cancel {
+  flex: 1;
+  background: #f5f5f5;
+  color: #666;
+  border-radius: 12rpx;
+  padding: 22rpx 0;
+  font-size: 28rpx;
+  text-align: center;
+  border: none;
+}
+
+/* 旅行标签 */
+.trip-selector {
+  background: #fff;
+  padding: 20rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+.trip-tabs {
+  display: flex;
+  white-space: nowrap;
+  padding: 0 30rpx;
+}
+.trip-tab {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: 12rpx;
+  background: #f5f5f5;
+  min-width: 140rpx;
+}
+.trip-tab.active {
+  background: #1A1A2E;
+}
+.trip-tab.active .trip-tab-name {
+  color: #fff;
+}
+.trip-tab.active .trip-tab-info {
+  color: rgba(255,255,255,0.6);
+}
+.trip-tab-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+}
+.trip-tab-info {
+  font-size: 20rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+/* 清单区域 */
+.list-section {
+  padding: 20rpx 30rpx;
+}
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.list-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1A1A2E;
+}
+.list-actions {
+  display: flex;
+  gap: 20rpx;
+}
+.header-btn {
+  font-size: 26rpx;
+  color: #4A90D9;
+  padding: 8rpx 16rpx;
+}
+
+/* 扫描栏 */
+.scan-bar {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.btn-scan {
+  flex: 1;
+  background: linear-gradient(135deg, #1A1A2E, #0F3460);
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+  border: none;
+}
+.btn-scan:active { opacity: 0.85; }
+.btn-export {
+  background: #fff;
+  color: #333;
+  font-size: 26rpx;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid #ddd;
+}
+.btn-export:active { background: #f5f5f5; }
+
+/* 物品列表 */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.item-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 14rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.item-card:active { background: #f9f9f9; }
+.item-card.checked { opacity: 0.6; }
+.item-card.checked .item-name { text-decoration: line-through; color: #999; }
+.item-check { font-size: 32rpx; margin-right: 16rpx; }
+.item-info { flex: 1; }
+.item-name {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+}
+.item-result {
+  display: inline-block;
+  font-size: 22rpx;
+  color: #666;
+  margin-top: 4rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+  background: #f5f5f5;
+}
+.item-delete {
+  font-size: 28rpx;
+  padding: 8rpx 12rpx;
+}
+
+/* 空清单 */
+.empty-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx;
+}
+.empty-icon { font-size: 64rpx; }
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-top: 16rpx;
+}
+.empty-hint {
+  font-size: 24rpx;
+  color: #bbb;
+  text-align: center;
+  margin: 12rpx 0 40rpx;
+}
+
+/* 管理栏 */
+.manage-bar {
+  display: flex;
+  gap: 16rpx;
+  padding: 20rpx 30rpx;
+}
+.btn-new-trip {
+  flex: 1;
+  background: #1A1A2E;
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 12rpx;
+  padding: 20rpx 0;
+  border: none;
+}
+.btn-new-trip:active { opacity: 0.85; }
+.btn-delete-trip {
+  background: #fff;
+  color: #ef4444;
+  font-size: 24rpx;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  border: 2rpx solid #fca5a5;
+}
+.btn-delete-trip:active { background: #fef2f2; }

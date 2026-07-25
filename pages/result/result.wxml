@@ -1,0 +1,59 @@
+<view class="page-result">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loader"></view>
+    <text class="loading-text">AI 正在分析...</text>
+  </view>
+
+  <!-- 未找到 -->
+  <view class="not-found" wx:elif="{{notFound}}">
+    <text class="nf-icon">🤔</text>
+    <text class="nf-title">没找到这个物品</text>
+    <text class="nf-desc">试试换个说法搜索，或者拍照识别</text>
+    <button class="btn-primary" bindtap="onNewSearch">换一个搜搜</button>
+    <button class="btn-camera" bindtap="onCamera">📷 拍照识别</button>
+  </view>
+
+  <!-- 结果 -->
+  <block wx:else>
+    <!-- 结果头部 -->
+    <view class="result-header">
+      <text class="header-icon">{{match.categoryIcon}}</text>
+      <text class="header-cat">{{match.category}}</text>
+      <text class="header-name">{{match.name}}</text>
+      <view class="result-summary">
+        <view class="result-tag {{formatted.carryOn.color === '#22c55e' ? 'green' : formatted.carryOn.color === '#ef4444' ? 'red' : formatted.carryOn.color === '#f59e0b' ? 'yellow' : 'blue'}}">
+          <text class="tag-label">随身携带</text>
+          <text class="tag-value">{{formatted.carryOn.text}}</text>
+        </view>
+        <view class="result-tag {{formatted.checkIn.color === '#22c55e' ? 'green' : formatted.checkIn.color === '#ef4444' ? 'red' : formatted.checkIn.color === '#f59e0b' ? 'yellow' : 'blue'}}">
+          <text class="tag-label">托运</text>
+          <text class="tag-value">{{formatted.checkIn.text}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 具体规定 -->
+    <view class="card">
+      <text class="card-title">📋 具体规定</text>
+      <view class="condition-list">
+        <view class="condition-item" wx:for="{{match.conditions}}" wx:key="*this">
+          <text class="condition-bullet">•</text>
+          <text class="condition-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 小贴士 -->
+    <view class="card" wx:if="{{match.tips}}">
+      <text class="card-title">💡 小贴士</text>
+      <text class="tips-text">{{match.tips}}</text>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-bar">
+      <button class="btn-action" bindtap="onAddToList">📋 加入清单检查</button>
+      <button class="btn-action btn-share" open-type="share">📤 分享给朋友</button>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,93 @@
+<view class="page-index">
+  <!-- 顶部搜索区 -->
+  <view class="search-section">
+    <view class="logo-area">
+      <text class="logo-icon">✈️</text>
+      <text class="logo-text">AIR FLY</text>
+      <text class="logo-sub">拍一张就知道能不能上飞机</text>
+    </view>
+
+    <view class="search-box {{showClear ? 'focused' : ''}}">
+      <text class="search-icon">🔍</text>
+      <input class="search-input" 
+        placeholder="输入物品名称，如：充电宝、茅台酒..." 
+        value="{{query}}"
+        bindinput="onInput"
+        bindconfirm="onSearch"
+        focus="{{true}}"
+        confirm-type="search"
+      />
+      <text class="camera-icon" bindtap="onCamera">📷</text>
+      <text class="clear-btn" wx:if="{{showClear}}" bindtap="onClear">✕</text>
+    </view>
+
+    <!-- 快捷搜索建议 -->
+    <view class="suggestions" wx:if="{{suggestions.length > 0}}">
+      <view class="suggestion-item" 
+        wx:for="{{suggestions}}" wx:key="name"
+        bindtap="onSearch" data-item="{{item.name}}">
+        <text class="sug-icon">{{item.icon}}</text>
+        <view class="sug-info">
+          <text class="sug-name">{{item.name}}</text>
+          <text class="sug-cat">{{item.cat}}</text>
+        </view>
+        <view class="sug-status {{item.carryOn === '允许' ? 'allow' : item.carryOn === '禁止' ? 'deny' : 'cond'}}">
+          {{item.carryOn}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 热门查询 -->
+  <view class="section" wx:if="{{suggestions.length === 0}}">
+    <view class="section-header">
+      <text class="section-title">🔥 热门查询</text>
+    </view>
+    <view class="tag-list">
+      <view class="tag" wx:for="{{hotQueries}}" wx:key="*this"
+        bindtap="onHotQuery" data-query="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索历史 -->
+  <view class="section" wx:if="{{history.length > 0 && suggestions.length === 0}}">
+    <view class="section-header">
+      <text class="section-title">🕐 搜索历史</text>
+      <text class="clear-history" bindtap="onClearHistory">清空</text>
+    </view>
+    <view class="history-list">
+      <view class="history-item" wx:for="{{history}}" wx:key="*this"
+        bindtap="onHistoryItem" data-query="{{item}}">
+        <text>🕐</text>
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能介绍卡片 -->
+  <view class="feature-card" wx:if="{{suggestions.length === 0 && history.length === 0}}">
+    <view class="feature-item">
+      <text class="feature-icon">📷</text>
+      <view>
+        <text class="feature-title">拍照识别</text>
+        <text class="feature-desc">拍一张照片，AI自动识别能不能带</text>
+      </view>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">📋</text>
+      <view>
+        <text class="feature-title">旅行清单</text>
+        <text class="feature-desc">自动检查每件行李是否符合规定</text>
+      </view>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🌍</text>
+      <view>
+        <text class="feature-title">国内外航班</text>
+        <text class="feature-desc">覆盖中国民航局+国际航司规定</text>
+      </view>
+    </view>
+  </view>
+</view>
