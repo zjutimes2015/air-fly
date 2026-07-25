@@ -221,27 +221,16 @@ Page({
   },
 
   /**
-   * OCR兜底：手动输入
+   * OCR兜底：返回首页手动输入
+   * wx.showModal 不支持 editable，改用导航回首页
    */
   ocrFallback() {
-    const self = this
     wx.showModal({
       title: '拍照识别',
-      content: '暂无法自动识别，请输入物品名称搜索',
-      placeholderText: '例如：充电宝、茅台酒、化妆品...',
-      editable: true,
-      confirmText: '搜索',
-      success(res) {
-        if (res.confirm && res.content) {
-          const q = res.content.trim()
-          if (q) {
-            self.setData({ query: q })
-            self.addHistory(q)
-            wx.navigateTo({
-              url: `/pages/result/result?q=${encodeURIComponent(q)}`
-            })
-          }
-        }
+      content: '云环境尚未配置，请在搜索框输入物品名称',
+      confirmText: '知道了',
+      success() {
+        // 用户已经在首页，直接聚焦输入框
       }
     })
   },

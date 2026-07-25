@@ -17,7 +17,11 @@ Page({
     const trips = wx.getStorageSync('trips') || []
     this.setData({ trips })
     if (trips.length > 0) {
-      this.setData({ currentTrip: trips[0], currentIndex: 0 })
+      // 保持当前选中的旅行，如果没有则选第一个
+      const currentIdx = this.data.currentIndex >= 0 && this.data.currentIndex < trips.length
+        ? this.data.currentIndex
+        : 0
+      this.setData({ currentTrip: trips[currentIdx], currentIndex: currentIdx })
     }
   },
 
@@ -126,26 +130,15 @@ Page({
   },
 
   onAddItem() {
-    const self = this
+    // wx.showModal 不支持 editable，改用自定义输入
     wx.showModal({
       title: '添加物品',
-      content: '输入物品名称（如：充电宝、洗发水）',
-      placeholderText: '例如：2万毫安充电宝',
-      editable: true,
+      content: '请在搜索页面搜索物品后点击「加入清单」，或返回首页搜索',
+      confirmText: '去搜索',
+      cancelText: '取消',
       success(res) {
-        if (res.confirm && res.content) {
-          const trip = { ...self.data.currentTrip }
-          trip.items = [...trip.items, {
-            id: Date.now().toString(36),
-            name: res.content,
-            checked: false,
-            addedAt: new Date().toISOString()
-          }]
-          const trips = [...self.data.trips]
-          trips[self.data.currentIndex] = trip
-          wx.setStorageSync('trips', trips)
-          self.setData({ trips, currentTrip: trip })
-          wx.showToast({ title: '已添加', icon: 'success' })
+        if (res.confirm) {
+          wx.switchTab({ url: '/pages/index/index' })
         }
       }
     })

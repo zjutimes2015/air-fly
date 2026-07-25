@@ -78,14 +78,7 @@ Page({
   },
 
   onCamera() {
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['camera'],
-      success() {
-        wx.showToast({ title: '拍照识别开发中', icon: 'none' })
-      }
-    })
+    wx.switchTab({ url: '/pages/index/index' })
   },
 
   onAddToList() {

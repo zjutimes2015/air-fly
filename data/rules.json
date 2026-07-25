@@ -232,7 +232,7 @@
       "items": [
         {
           "name": "充电宝（详见电池类）",
-          "keywords": ["充电宝", "power bank"],
+          "keywords": [],
           "rule_carry_on": "允许",
           "rule_check_in": "禁止",
           "conditions": ["详见电池与充电设备分类"],
