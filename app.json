@@ -30,5 +30,11 @@
   },
   "usingComponents": {},
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "keywords": ["行李规定", "安检查询", "带上飞机", "航空规则", "旅行清单", "充电宝", "能带上飞机吗"],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于推荐出发机场"
+    }
+  }
 }

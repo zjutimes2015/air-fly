@@ -2,6 +2,18 @@
   "rules": [
     {
       "action": "allow",
+      "page": "pages/index/index"
+    },
+    {
+      "action": "allow",
+      "page": "pages/result/result"
+    },
+    {
+      "action": "allow",
+      "page": "pages/checklist/checklist"
+    },
+    {
+      "action": "disallow",
       "page": "*"
     }
   ]
